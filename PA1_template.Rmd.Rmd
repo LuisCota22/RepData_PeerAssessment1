@@ -56,5 +56,15 @@ median(steps_sum2$steps)
 ```{r weekdays}
 activity$date <- as.Date.character(activity$date)
 activity$days <- weekdays(activity$date)
+week_day_check <- function(date_x){
+        wd <- weekdays(as.Date(date_x, '%Y-%m-%d'))
+        if  (wd == 'Saturday' || wd == 'Sunday') 
+        {day_x <-'weekend'}         
+        else {day_x <- 'weekday'}
+day_x
+}
+activity$day <- as.factor(sapply(activity$date, week_day_check))
+data_mean2 <- aggregate(steps ~ interval+day, activity, mean)
+ggplot(data_mean2, aes(interval, steps, colour = day)) + geom_line(stat = "identity") +facet_grid(day ~ ., scales = "fixed", space = "fixed") + ggtitle("Steps per Interval by Days Type")
 ```
 
