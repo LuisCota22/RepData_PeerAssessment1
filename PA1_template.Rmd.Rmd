@@ -1,0 +1,60 @@
+---
+title: "PROYECT COURSERA"
+author: "Luis Fernando Monterrubio Cota"
+date: "28/3/2021"
+output: html_document
+---
+
+```{r setoptions,echo=T}
+library(knitr)
+opts_chunk$set(echo=TRUE)
+```
+
+## Loading and preprocessing the data
+```{r}
+activity <- read.csv("./activity.csv", header = TRUE)
+```
+
+
+## What is mean total number of steps taken per day?
+```{r plot1}
+steps_sum <- aggregate(steps ~ date, activity, FUN = sum, na.rm = TRUE)
+hist(steps_sum$steps, main = "STEPS PER DAY", xlab = "Steps", col = "orange")
+mean(steps_sum$steps)
+median(steps_sum$steps)
+```
+
+## What is the average daily activity pattern?
+
+```{r average}
+data_mean <- aggregate(activity$steps, by=list(activity$interval), FUN=mean, na.rm=TRUE)
+names(data_mean) <- c("interval", "steps")
+par(bg = "wheat")
+with(data_mean, plot(interval, steps, type = "l", col = "orange", main = "Average number of steps per intervals"))
+```
+
+
+## Imputing missing values
+
+```{r datoslimpios}
+mean((is.na(activity$steps)))
+mean(is.na(activity$interval))
+miss_data <- (is.na(activity))
+head(miss_data)
+data_clean <- data.frame(na.omit(activity))
+data_mean <- mean(data_clean$steps)
+activity$steps[is.na(activity$steps)]=data_mean
+head(activity)
+steps_sum2 <- aggregate(steps ~ date, activity, FUN = sum, na.rm = TRUE)
+hist(steps_sum2$steps, main = "STEPS PER DAY WITHOUT NA", xlab = "Steps", col = "turquoise")
+mean(steps_sum2$steps)
+median(steps_sum2$steps)
+```
+
+## Are there differences in activity patterns between weekdays and weekends?
+
+```{r weekdays}
+activity$date <- as.Date.character(activity$date)
+activity$days <- weekdays(activity$date)
+```
+
